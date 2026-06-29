@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Sammi Trains">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#c2185b">
+<title>Sammi Trains</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;overflow:hidden;background:#c2185b;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}
+#app{height:100vh;height:100dvh;display:flex;flex-direction:column;max-width:430px;margin:0 auto;background:#fdf6f9;position:relative;overflow:hidden}
+#hdr{background:linear-gradient(135deg,#c2185b 0%,#e91e8c 100%);padding-top:env(safe-area-inset-top,0px);flex-shrink:0}
+#hdr-in{padding:13px 16px 12px;display:flex;justify-content:space-between;align-items:center}
+#hdr h1{color:#fff;font-size:17px;font-weight:600}
+#hdr p{color:rgba(255,255,255,0.65);font-size:11px;margin-top:1px}
+.badge{background:rgba(255,255,255,0.2);color:#fff;font-size:10px;font-weight:600;padding:3px 8px;border-radius:10px}
+#content{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:14px 14px 80px}
+#nav{position:absolute;bottom:0;left:0;right:0;background:#fff;border-top:1px solid #f0d6e8;display:flex;padding-bottom:env(safe-area-inset-bottom,0px);z-index:99}
+.nbt{flex:1;display:flex;flex-direction:column;align-items:center;padding:9px 2px 7px;background:none;border:none;cursor:pointer;font-family:inherit;color:#ccc}
+.nbt.on{color:#c2185b}
+.nbt-ico{font-size:20px;line-height:1.2}
+.nbt-lbl{font-size:9px;font-weight:500;margin-top:2px;display:block}
+.pg{display:none}
+.pg.on{display:block}
+.card{background:#fff;border-radius:14px;padding:14px;margin-bottom:10px;border:1px solid #f5e0ee}
+.ctitle{font-size:13px;font-weight:600;color:#111;margin-bottom:8px}
+.sgrid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:10px}
+.stt{background:linear-gradient(135deg,#fce4f0,#fdf0f7);border-radius:10px;padding:10px 6px;text-align:center;border:1px solid #f5d0e8}
+.sv{font-size:20px;font-weight:700;color:#c2185b}
+.sl{font-size:10px;color:#999;margin-top:2px}
+.wrow{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #fce8f3;font-size:13px}
+.wrow:last-child{border-bottom:none}
+.wd{color:#e91e8c;font-weight:500;font-size:12px;min-width:32px}
+.flbl{font-size:12px;color:#888;display:block;margin:10px 0 4px}
+input[type=date],input[type=number],input[type=text],textarea{width:100%;padding:10px 12px;border-radius:10px;border:1px solid #e8c8da;font-size:14px;background:#fff;color:#111;font-family:inherit;outline:none;-webkit-appearance:none;display:block}
+input:focus,textarea:focus{border-color:#c2185b;box-shadow:0 0 0 3px rgba(194,24,91,0.1)}
+textarea{min-height:70px;resize:vertical;line-height:1.5}
+.pills{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px}
+.pll{padding:7px 13px;border-radius:20px;border:1px solid #e8c8da;cursor:pointer;font-size:12px;background:#fff;color:#888;font-family:inherit;font-weight:500}
+.pll.on{background:#c2185b;color:#fff;border-color:#c2185b}
+.sbtn{width:100%;padding:14px;border-radius:12px;border:none;cursor:pointer;font-size:15px;font-weight:600;margin-top:14px;font-family:inherit;background:linear-gradient(135deg,#c2185b,#e91e8c);color:#fff}
+.sbtn.ok{background:#ad1457;color:#fff}
+.exc{border-radius:10px;padding:11px;margin-bottom:7px;border:1px solid #f5e0ee}
+.exc.ev{background:#fef5fb}
+.exc.od{background:#fff}
+.exc.mc-ex{border-left:3px solid #e91e8c}
+.en{font-size:13px;font-weight:600;color:#111}
+.em{font-size:11px;color:#bbb;margin-top:2px}
+.etag{display:inline-block;font-size:9px;font-weight:600;padding:2px 6px;border-radius:6px;margin-top:3px}
+.etag.bw{background:#fce4f0;color:#c2185b}
+.etag.mc{background:#e8f0fe;color:#1565c0}
+.etag.sw{background:#e8f6ee;color:#1b5e20}
+.etag.cd{background:#fff3e0;color:#e65100}
+.enote{font-size:11px;color:#c2185b;margin-top:4px;line-height:1.4}
+.sg3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:5px;margin-top:7px}
+.sg2{display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-top:7px}
+.sg3 input,.sg2 input{padding:7px 8px;font-size:12px;border-radius:8px}
+.exnotes{width:100%;margin-top:5px;padding:7px 10px;border-radius:8px;border:1px solid #e8c8da;font-size:12px;font-family:inherit;outline:none;background:#fff;color:#111}
+.excheck{width:20px;height:20px;cursor:pointer;margin-left:8px;margin-top:2px;accent-color:#c2185b;flex-shrink:0}
+.pace-box{background:linear-gradient(135deg,#fce4f0,#fdf0f7);border-radius:10px;padding:9px 12px;text-align:center;margin:8px 0;border:1px solid #f5d0e8}
+.pv{font-size:17px;font-weight:700;color:#c2185b}
+.pl{font-size:11px;color:#aaa;margin-bottom:2px}
+.effrow{display:flex;align-items:center;gap:10px;margin-top:4px}
+.effrow input[type=range]{flex:1;accent-color:#c2185b}
+.effn{font-size:17px;font-weight:700;min-width:22px;text-align:center;color:#c2185b}
+.efflbls{display:flex;justify-content:space-between;font-size:10px;color:#ccc;margin-top:2px}
+.tgns{display:flex;gap:8px;margin-bottom:12px}
+.tgbt{flex:1;padding:10px;border-radius:10px;border:1px solid #e8c8da;cursor:pointer;font-size:13px;font-weight:500;background:#fff;color:#888;font-family:inherit}
+.tgbt.on{background:#c2185b;color:#fff;border-color:#c2185b}
+.hc{background:#fff;border-radius:12px;padding:12px;margin-bottom:8px;border:1px solid #f5e0ee}
+.ht{font-size:14px;font-weight:600;color:#111}
+.hs{font-size:11px;color:#bbb;margin-top:2px}
+.hd{font-size:11px;color:#c2185b;margin-top:2px}
+.hex{margin-top:6px;padding-top:6px;border-top:1px solid #fce8f3}
+.hen{font-size:12px;font-weight:600;color:#444}
+.hev{font-size:11px;color:#bbb}
+.hn{font-size:11px;color:#bbb;font-style:italic;margin-top:2px}
+.empty{color:#ddd;font-size:14px;text-align:center;padding:50px 20px;line-height:1.8}
+.pscroll{display:flex;gap:6px;overflow-x:auto;padding-bottom:6px;margin-bottom:12px;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+.pscroll::-webkit-scrollbar{display:none}
+.phbt{flex-shrink:0;padding:7px 13px;border-radius:20px;border:1px solid #e8c8da;cursor:pointer;font-size:12px;background:#fff;color:#888;font-family:inherit;font-weight:500}
+.phbt.on{background:#c2185b;color:#fff;border-color:#c2185b}
+.phcard{border-radius:12px;padding:14px;margin-bottom:12px}
+.phtitle{font-size:12px;font-weight:600;color:#c2185b;margin-bottom:2px}
+.phname{font-size:16px;font-weight:600;color:#111;margin-bottom:10px}
+.rs{padding:7px 0;border-bottom:1px solid rgba(194,24,91,0.08);font-size:13px;color:#333;line-height:1.4}
+.rs:last-child{border-bottom:none}
+.mitem{border-radius:10px;padding:12px 13px;margin-bottom:6px;border:1px solid #f5e0ee;font-size:13px;color:#333;line-height:1.5}
+.mitem.ev{background:#fef8fb}
+.mitem.od{background:#fff}
+.mitem strong{color:#c2185b;font-weight:600}
+.trow{padding:7px 0;border-bottom:1px solid #fce8f3}
+.trow:last-child{border-bottom:none}
+.tt{font-size:12px;font-weight:600;color:#c2185b}
+.tn{font-size:12px;color:#777;margin-top:2px;line-height:1.4}
+.shdr{font-size:11px;font-weight:600;letter-spacing:0.5px;text-transform:uppercase;margin:12px 0 6px;color:#e8a0c0}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.info-banner{background:linear-gradient(135deg,#fce4f0,#fdf0f7);border-radius:12px;padding:12px 14px;margin-bottom:10px;border:1px solid #f5d0e8}
+.info-banner p{font-size:12px;color:#888;line-height:1.6}
+.info-banner strong{color:#c2185b}
+.protein-bar{background:#fff;border-radius:12px;padding:13px;margin-bottom:10px;border:1px solid #f5e0ee}
+.pb-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.pb-label{font-size:12px;color:#888}
+.pb-val{font-size:13px;font-weight:600;color:#c2185b}
+.pb-track{background:#fce4f0;border-radius:6px;height:8px;overflow:hidden}
+.pb-fill{background:linear-gradient(90deg,#c2185b,#e91e8c);height:100%;border-radius:6px}
+.gf-tag{display:inline-block;background:#e8f5e9;color:#2e7d32;font-size:10px;font-weight:600;padding:2px 7px;border-radius:8px;margin-left:6px;vertical-align:middle}
+</style>
+</head>
+<body>
+<div id="app">
+  <div id="hdr">
+    <div id="hdr-in">
+      <div><h1>Sammi Trains &#x1F338;</h1><p>Your personal fitness plan</p></div>
+      <div class="badge">GLUTEN FREE</div>
+    </div>
+  </div>
+
+  <div id="content">
+
+    <!-- HOME -->
+    <div id="pg-home" class="pg on">
+      <div class="info-banner">
+        <p><strong>Hey Sammi!</strong> Your plan focuses on bodyweight strength, stair master cardio, and hitting <strong>100g protein</strong> daily. Gluten-free friendly throughout &#x1F33A;</p>
+      </div>
+      <div class="sgrid" id="hm-stats">
+        <div class="stt"><div class="sv">0</div><div class="sl">Strength sessions</div></div>
+        <div class="stt"><div class="sv">0</div><div class="sl">Cardio sessions</div></div>
+        <div class="stt"><div class="sv">0</div><div class="sl">Cardio mins</div></div>
+      </div>
+      <div class="card" id="hm-gym" style="display:none"><div class="ctitle">Last session</div><div id="hm-gym-b"></div></div>
+      <div class="card" id="hm-card" style="display:none"><div class="ctitle">Last cardio</div><div id="hm-card-b"></div></div>
+      <div class="card">
+        <div class="ctitle">Weekly schedule</div>
+        <div class="wrow"><span class="wd">Mon</span><span>Full body strength &#x1F4AA;</span></div>
+        <div class="wrow"><span class="wd">Tue</span><span>Stair master + walk &#x1F6B6;</span></div>
+        <div class="wrow"><span class="wd">Wed</span><span>Glutes &amp; legs &#x1F351;</span></div>
+        <div class="wrow"><span class="wd">Thu</span><span>Active rest &mdash; walk &#x1F33F;</span></div>
+        <div class="wrow"><span class="wd">Fri</span><span>Upper body &amp; core &#x1F4AB;</span></div>
+        <div class="wrow"><span class="wd">Sat</span><span>Stair master + walk &#x1F6B6;</span></div>
+        <div class="wrow"><span class="wd">Sun</span><span>Rest &#x1F634;</span></div>
+      </div>
+      <div class="card">
+        <div class="ctitle">Exercise key</div>
+        <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px">
+          <span class="etag bw">BODYWEIGHT</span>
+          <span class="etag mc">MACHINE</span>
+          <span class="etag sw">SMALL WEIGHTS</span>
+          <span class="etag cd">CARDIO</span>
+        </div>
+        <p style="font-size:12px;color:#aaa;line-height:1.5">Machine exercises (hip thrust, leg press) need gym equipment. Everything else is bodyweight or light DBs.</p>
+      </div>
+    </div>
+
+    <!-- STRENGTH -->
+    <div id="pg-gym" class="pg">
+      <span class="flbl">Date</span>
+      <input type="date" id="gd">
+      <span class="flbl" style="margin-top:12px">Session type</span>
+      <div class="pills" id="sess-pills"></div>
+      <div id="ex-list"></div>
+      <button class="sbtn" id="gsave">Save session</button>
+      <div style="height:10px"></div>
+    </div>
+
+    <!-- CARDIO -->
+    <div id="pg-cardio" class="pg">
+      <span class="flbl">Date</span>
+      <input type="date" id="cd">
+      <span class="flbl" style="margin-top:12px">Cardio type</span>
+      <div class="pills" id="ctype-pills"></div>
+      <div class="g2" style="margin-top:4px">
+        <div><span class="flbl" style="margin-top:0">Duration (min)</span><input type="number" id="cdur" step="1" placeholder="30"></div>
+        <div><span class="flbl" style="margin-top:0">Distance / floors</span><input type="text" id="cdist" placeholder="e.g. 40 floors"></div>
+      </div>
+      <span class="flbl">Level / intensity</span>
+      <input type="text" id="clevel" placeholder="e.g. Stair master level 8">
+      <span class="flbl">Effort (1-10)</span>
+      <div class="effrow">
+        <input type="range" id="ceff" min="1" max="10" step="1" value="7">
+        <span class="effn" id="ceo">7</span>
+      </div>
+      <div class="efflbls"><span>Easy</span><span>Max effort</span></div>
+      <span class="flbl">Notes</span>
+      <textarea id="cnotes" placeholder="How did it feel? Level, how you felt..."></textarea>
+      <button class="sbtn" id="csave">Save cardio</button>
+      <div style="height:10px"></div>
+    </div>
+
+    <!-- HISTORY -->
+    <div id="pg-hist" class="pg">
+      <div class="tgns">
+        <button class="tgbt on" id="hgbtn">&#x1F4AA; Strength</button>
+        <button class="tgbt" id="hcbtn">&#x1F6B6; Cardio</button>
+      </div>
+      <div id="hstats"></div>
+      <div id="hlist"></div>
+    </div>
+
+    <!-- NUTRITION -->
+    <div id="pg-nutrition" class="pg">
+      <div class="info-banner">
+        <p><strong>Your protein goal: 100g per day</strong><br>You already eat well &mdash; this is just about making sure protein shows up at every meal. Aim for ~25g breakfast, ~35g lunch, ~35g dinner, ~5g snacks.</p>
+      </div>
+      <div class="protein-bar">
+        <div class="pb-row"><span class="pb-label">Daily protein target</span><span class="pb-val">100g</span></div>
+        <div class="pb-track"><div class="pb-fill" style="width:100%"></div></div>
+        <div style="display:flex;justify-content:space-between;margin-top:6px">
+          <span style="font-size:10px;color:#ddd">Breakfast ~25g</span>
+          <span style="font-size:10px;color:#ddd">Lunch ~35g</span>
+          <span style="font-size:10px;color:#ddd">Dinner ~35g</span>
+          <span style="font-size:10px;color:#ddd">Snack ~5g</span>
+        </div>
+      </div>
+      <div class="shdr">Meal ideas</div>
+      <div class="pills" id="meal-cats"></div>
+      <div id="meal-list"></div>
+      <div class="card" style="margin-top:8px">
+        <div class="ctitle">Nutrition advice</div>
+        <div class="trow"><div class="tt">You already eat well &#x2728;</div><div class="tn">Just make protein intentional at every meal. You're most of the way there already.</div></div>
+        <div class="trow"><div class="tt">Gluten free is handled</div><div class="tn">All meal ideas use rice, rice noodles, kumara or GF alternatives. No wheat, no problem.</div></div>
+        <div class="trow"><div class="tt">Chicken is your best friend</div><div class="tn">150g cooked chicken breast = ~45g protein. Two serves a day and you're basically there. Add eggs and Greek yoghurt for the rest.</div></div>
+        <div class="trow"><div class="tt">Pre-training</div><div class="tn">Banana or GF rice cakes + nut butter 45 min before. Light and easy to digest.</div></div>
+        <div class="trow"><div class="tt">Post-training</div><div class="tn">Protein within 45 min &mdash; chicken, Greek yoghurt, protein shake, or eggs.</div></div>
+        <div class="trow"><div class="tt">Hydration</div><div class="tn">2-3L water daily. Electrolytes after stair master sessions. Skin loves hydration.</div></div>
+        <div class="trow"><div class="tt">Don't overthink it</div><div class="tn">Protein at breakfast, lunch and dinner and the rest takes care of itself. No calorie counting needed.</div></div>
+      </div>
+      <div style="height:10px"></div>
+    </div>
+
+    <!-- PLAN -->
+    <div id="pg-plan" class="pg">
+      <div class="shdr">Training phases</div>
+      <div class="pscroll" id="ph-btns"></div>
+      <div id="ph-content"></div>
+      <div class="card">
+        <div class="ctitle">Stair master guide &#x1F3C6;</div>
+        <div class="trow"><div class="tt">Beginner (Weeks 1-4)</div><div class="tn">20-25 min at level 6-8. Focus on posture &mdash; don't lean on the rails.</div></div>
+        <div class="trow"><div class="tt">Building (Weeks 5-10)</div><div class="tn">30 min at level 8-10. Add 1 min intervals at level 12 every 5 min.</div></div>
+        <div class="trow"><div class="tt">Progressed (Weeks 11+)</div><div class="tn">35-40 min at level 10-12. Try 2 min on / 1 min off intervals.</div></div>
+        <div class="trow"><div class="tt">Form tip</div><div class="tn">Stand tall, core on, light touch on rails only for balance. Drive through the heel of each step for maximum glute activation.</div></div>
+      </div>
+      <div style="height:10px"></div>
+    </div>
+
+  </div><!-- end content -->
+
+  <nav id="nav">
+    <button class="nbt on" data-page="home"><span class="nbt-ico">&#x1F3E0;</span><span class="nbt-lbl">Home</span></button>
+    <button class="nbt" data-page="gym"><span class="nbt-ico">&#x1F4AA;</span><span class="nbt-lbl">Strength</span></button>
+    <button class="nbt" data-page="cardio"><span class="nbt-ico">&#x1F6B6;</span><span class="nbt-lbl">Cardio</span></button>
+    <button class="nbt" data-page="hist"><span class="nbt-ico">&#x1F4C8;</span><span class="nbt-lbl">History</span></button>
+    <button class="nbt" data-page="nutrition"><span class="nbt-ico">&#x1F957;</span><span class="nbt-lbl">Nutrition</span></button>
+    <button class="nbt" data-page="plan"><span class="nbt-ico">&#x1F5D3;</span><span class="nbt-lbl">Plan</span></button>
+  </nav>
+</div>
+
+<script>
+(function() {
+
+var K = 'sammi_v2';
+var HV = 'g';
+var CP = 0;
+var CM = 'Breakfast';
+var CS = 'Full body strength';
+var CC = 'Stair master';
+var EX = {};
+
+var GYM = {
+  'Full body strength': [
+    {n:'Bodyweight squats', s:3, r:'15-20', t:'2-1-2', re:'30s', tag:'bw', no:'Full depth. Drive knees out. Hold a light DB for extra resistance.'},
+    {n:'Push-ups', s:3, r:'10-15', t:'2-1-2', re:'30s', tag:'bw', no:'On knees to modify. Keep core tight throughout.'},
+    {n:'Glute bridges', s:3, r:'15', t:'2-3-1', re:'30s', tag:'bw', no:'3 sec hold at top each rep. Drive hips up through heel.'},
+    {n:'Reverse lunges', s:3, r:'10 E/L', t:'2-1-1', re:'30s', tag:'bw', no:'Step back, knee hovers above floor. Can add light DBs.'},
+    {n:'Incline push-ups', s:3, r:'12', t:'2-1-2', re:'30s', tag:'bw', no:'Hands on bench or step. Great for building to full push-ups.'},
+    {n:'Plank hold', s:3, r:'30-45 sec', t:'---', re:'30s', tag:'bw', no:'Forearm or straight arm. Core braced, hips level.'},
+    {n:'DB Romanian deadlifts', s:3, r:'12', t:'3-1-2', re:'30s', tag:'sw', no:'Light to moderate DBs. Hinge from hip, soft knee bend, flat back.'},
+    {n:'Tricep dips (bench)', s:3, r:'12', t:'2-1-2', re:'30s', tag:'bw', no:'Hands on bench behind you, lower until elbows at 90 degrees.'},
+    {n:'Stair master finisher', s:1, r:'10 min', t:'---', re:'---', tag:'cd', no:'Level 8-10 to finish. Core on, stand tall.'}
+  ],
+  'Glutes and legs': [
+    {n:'Hip thrust (machine or barbell)', s:4, r:'12', t:'2-4-1', re:'45s', tag:'mc', no:'4 sec hold at top. Drive through heels. Use glute pad for comfort.'},
+    {n:'Leg press', s:3, r:'15', t:'3-1-2', re:'45s', tag:'mc', no:'Feet high and wide for glute focus. Full range of motion.'},
+    {n:'Sumo squats', s:3, r:'15', t:'3-1-2', re:'30s', tag:'bw', no:'Wide stance, toes out. Hold a single DB between legs for extra load.'},
+    {n:'Glute kickbacks', s:3, r:'15 E/L', t:'2-2-1', re:'30s', tag:'bw', no:'On all fours. Squeeze at the top, controlled down.'},
+    {n:'Lateral band walks', s:3, r:'15 E/D', t:'---', re:'30s', tag:'bw', no:'Mini band above knees. Stay low, controlled side steps.'},
+    {n:'Single-leg glute bridge', s:3, r:'12 E/L', t:'2-3-1', re:'30s', tag:'bw', no:'One foot flat, other leg straight up. Drive through heel.'},
+    {n:'Reverse lunges', s:3, r:'12 E/L', t:'2-1-1', re:'30s', tag:'bw', no:'Can add light DBs for extra load.'},
+    {n:'Wall sit', s:3, r:'45 sec', t:'---', re:'30s', tag:'bw', no:'Thighs parallel to floor, back flat against wall.'},
+    {n:'Stair master finisher', s:1, r:'10 min', t:'---', re:'---', tag:'cd', no:'Drive through heels for extra glute activation.'}
+  ],
+  'Upper body and core': [
+    {n:'Push-ups', s:4, r:'12-15', t:'2-1-2', re:'30s', tag:'bw', no:'Wide hand = chest focus, narrow hand = triceps focus.'},
+    {n:'DB shoulder press', s:3, r:'12', t:'2-0-2', re:'30s', tag:'sw', no:'Light DBs. Seated or standing. Strict, no momentum.'},
+    {n:'DB lateral raises', s:3, r:'15', t:'2-0-2', re:'30s', tag:'sw', no:'Light weight. Arms to shoulder height only.'},
+    {n:'Plank to downward dog', s:3, r:'10', t:'---', re:'30s', tag:'bw', no:'From plank push hips up into downward dog, return. Controlled.'},
+    {n:'DB bicep curls', s:3, r:'12', t:'2-1-2', re:'30s', tag:'sw', no:'Light DBs. Elbows fixed at sides. Slow and controlled.'},
+    {n:'Tricep dips (bench)', s:3, r:'12', t:'2-1-2', re:'30s', tag:'bw', no:'Hands behind on bench. Elbows 90 degrees at bottom.'},
+    {n:'Dead bugs', s:3, r:'10 E/S', t:'---', re:'30s', tag:'bw', no:'Lower back pressed to floor throughout. Opposite arm and leg extend slowly.'},
+    {n:'Side plank', s:3, r:'30 sec E/S', t:'---', re:'30s', tag:'bw', no:'On knee to modify. Keep hips stacked.'},
+    {n:'Mountain climbers', s:3, r:'30 sec', t:'---', re:'30s', tag:'bw', no:'Drive knees toward chest alternately at pace.'},
+    {n:'Hollow body hold', s:3, r:'20-30 sec', t:'---', re:'30s', tag:'bw', no:'Arms overhead, lower back to floor, legs raised. Core shaking means it is working.'}
+  ]
+};
+
+var PHS = [
+  {p:'Phase 1', m:'Weeks 1-4', d:'Foundation', s:['3 strength sessions per week (Mon, Wed, Fri)','2 cardio sessions: 20-25 min stair master at level 6-8','Thu: 30-45 min walk outside','Focus: learn the movements, build the habit, hit protein daily']},
+  {p:'Phase 2', m:'Weeks 5-8', d:'Build', s:['3 strength sessions - add reps or light weight where able','2-3 cardio: stair master 30 min at level 8-10','Thu and Sat walk: aim for 7,000-10,000 steps','Focus: progressive overload, better form, notice changes']},
+  {p:'Phase 3', m:'Weeks 9-12', d:'Tone and define', s:['3 strength sessions - circuits or supersets to lift intensity','Stair master 35 min at level 10-12 with intervals','Daily 8,000+ steps','Focus: dial in nutrition, push intensity, visible results']}
+];
+
+var MEALS = {
+  'Breakfast': [
+    {t:'High protein yoghurt bowl', d:'200g Greek yoghurt + GF granola + berries + nut butter. ~25g protein.'},
+    {t:'Scrambled eggs on GF toast', d:'3 eggs with spinach and feta on GF toast or rice cakes. ~22g protein.'},
+    {t:'Protein smoothie', d:'Protein powder + banana + almond milk + GF oats. ~28g protein.'}
+  ],
+  'Lunch': [
+    {t:'Chicken rice bowl', d:'150g grilled chicken breast + jasmine rice + cucumber + edamame + soy-sesame dressing. ~45g protein.'},
+    {t:'Teriyaki chicken + rice', d:'Chicken thigh in GF tamari + honey + ginger. Rice + steamed broccoli. ~42g protein.'},
+    {t:'Rice noodle salad', d:'Rice noodles + shredded chicken + carrot + coriander + GF sweet chilli dressing. ~35g protein.'}
+  ],
+  'Dinner': [
+    {t:'Baked lemon herb chicken', d:'150g chicken breast baked with lemon, garlic and rosemary. Roasted kumara + salad. ~40g protein.'},
+    {t:'Chicken stir fry on rice', d:'Chicken strips + mixed veg in GF tamari + sesame oil. Jasmine rice. ~38g protein.'},
+    {t:'Stuffed capsicums', d:'Lean mince + rice + herbs stuffed in capsicum, baked. Top with feta. ~35g protein.'}
+  ],
+  'Snacks': [
+    {t:'Greek yoghurt + berries', d:'150g Greek yoghurt + strawberries or blueberries. ~12g protein.'},
+    {t:'Rice cakes + cottage cheese', d:'GF rice cakes + cottage cheese + cucumber. ~10g protein.'},
+    {t:'Hard boiled eggs', d:'2 eggs with sea salt. Simple, portable, filling. ~12g protein.'},
+    {t:'Edamame', d:'Frozen edamame microwaved with sea salt. ~11g protein per cup.'}
+  ]
+};
+
+function ld() {
+  try { return JSON.parse(localStorage.getItem(K)) || {gl:[],cl:[]}; }
+  catch(e) { return {gl:[],cl:[]}; }
+}
+function sv(d) {
+  try { localStorage.setItem(K, JSON.stringify(d)); } catch(e) {}
+}
+
+// ── NAV ──────────────────────────────────────────────────────────
+var navBtns = document.querySelectorAll('#nav .nbt');
+navBtns.forEach(function(btn) {
+  btn.addEventListener('click', function() {
+    var page = btn.getAttribute('data-page');
+    // hide all pages, deactivate all nav
+    document.querySelectorAll('.pg').forEach(function(p){ p.classList.remove('on'); });
+    navBtns.forEach(function(b){ b.classList.remove('on'); });
+    // show target
+    document.getElementById('pg-' + page).classList.add('on');
+    btn.classList.add('on');
+    document.getElementById('content').scrollTop = 0;
+    // render
+    if (page === 'home')      renderHome();
+    if (page === 'gym')       renderGym();
+    if (page === 'cardio')    renderCardio();
+    if (page === 'hist')      renderHist();
+    if (page === 'nutrition') renderNutrition();
+    if (page === 'plan')      renderPlan();
+  });
+});
+
+// ── HOME ─────────────────────────────────────────────────────────
+function renderHome() {
+  var d = ld();
+  var mins = d.cl.reduce(function(a,x){ return a+(parseFloat(x.dur)||0); }, 0);
+  document.getElementById('hm-stats').innerHTML =
+    '<div class="stt"><div class="sv">'+d.gl.length+'</div><div class="sl">Strength sessions</div></div>' +
+    '<div class="stt"><div class="sv">'+d.cl.length+'</div><div class="sl">Cardio sessions</div></div>' +
+    '<div class="stt"><div class="sv">'+Math.round(mins)+'</div><div class="sl">Cardio mins</div></div>';
+  var lg = d.gl[d.gl.length-1];
+  var lgc = document.getElementById('hm-gym');
+  if (lg) {
+    lgc.style.display = 'block';
+    var dn = Object.values(lg.ex||{}).filter(function(e){return e.done;}).length;
+    document.getElementById('hm-gym-b').innerHTML = '<div style="font-size:14px;font-weight:600;color:#111">'+lg.sess+'</div><div style="font-size:11px;color:#bbb;margin-top:2px">'+lg.date+' &middot; '+dn+' exercises ticked</div>';
+  } else { lgc.style.display = 'none'; }
+  var lc = d.cl[d.cl.length-1];
+  var lcc = document.getElementById('hm-card');
+  if (lc) {
+    lcc.style.display = 'block';
+    document.getElementById('hm-card-b').innerHTML = '<div style="font-size:14px;font-weight:600;color:#111">'+lc.type+' &middot; '+(lc.dur||'?')+' min</div><div style="font-size:11px;color:#bbb;margin-top:2px">'+lc.date+(lc.dist?' &middot; '+lc.dist:'')+'</div>';
+  } else { lcc.style.display = 'none'; }
+}
+
+// ── GYM ──────────────────────────────────────────────────────────
+function renderGym() {
+  var today = new Date().toISOString().split('T')[0];
+  document.getElementById('gd').value = today;
+  var pp = document.getElementById('sess-pills');
+  pp.innerHTML = '';
+  Object.keys(GYM).forEach(function(s) {
+    var b = document.createElement('button');
+    b.className = 'pll' + (s === CS ? ' on' : '');
+    b.textContent = s;
+    b.addEventListener('click', function() {
+      CS = s; EX = {};
+      document.querySelectorAll('#sess-pills .pll').forEach(function(x){ x.className='pll'; });
+      b.className = 'pll on';
+      renderExercises();
+      document.getElementById('gsave').textContent = 'Save session';
+      document.getElementById('gsave').className = 'sbtn';
+    });
+    pp.appendChild(b);
+  });
+  renderExercises();
+}
+
+function renderExercises() {
+  var list = document.getElementById('ex-list');
+  list.innerHTML = '';
+  var TAGS = {bw:'BODYWEIGHT', mc:'MACHINE', sw:'SMALL WEIGHTS', cd:'CARDIO'};
+  GYM[CS].forEach(function(ex, i) {
+    var ed = EX[ex.n] || {};
+    var isCardio = ex.tag === 'cd';
+    var isMachine = ex.tag === 'mc';
+    var div = document.createElement('div');
+    div.className = 'exc ' + (i%2===0?'ev':'od') + (isMachine?' mc-ex':'');
+
+    // input rows
+    var inputs = '';
+    if (isCardio) {
+      inputs = '<div class="sg2">' +
+        '<input type="text" class="si" data-f="s1" placeholder="Duration e.g. 10 min" value="'+(ed.s1||'')+'">' +
+        '<input type="text" class="si" data-f="s2" placeholder="Level e.g. 8" value="'+(ed.s2||'')+'">' +
+        '</div>';
+    } else {
+      inputs = '<div class="sg3">' +
+        '<input type="text" class="si" data-f="s1" placeholder="Set 1" value="'+(ed.s1||'')+'">' +
+        '<input type="text" class="si" data-f="s2" placeholder="Set 2" value="'+(ed.s2||'')+'">' +
+        '<input type="text" class="si" data-f="s3" placeholder="Set 3" value="'+(ed.s3||'')+'">' +
+        '</div>';
+    }
+
+    div.innerHTML =
+      '<div style="display:flex;justify-content:space-between;align-items:flex-start">' +
+        '<div style="flex:1">' +
+          '<div class="en">'+ex.n+'</div>' +
+          '<div class="em">'+ex.s+' sets &middot; '+ex.r+' &middot; tempo '+ex.t+' &middot; rest '+ex.re+'</div>' +
+          '<span class="etag '+ex.tag+'">'+TAGS[ex.tag]+'</span>' +
+          '<div class="enote">'+ex.no+'</div>' +
+        '</div>' +
+        '<input type="checkbox" class="excheck" '+(ed.done?'checked':'')+' style="margin-top:2px">' +
+      '</div>' +
+      inputs +
+      '<input type="text" class="exnotes si" data-f="notes" placeholder="Notes..." value="'+(ed.notes||'')+'">';
+
+    list.appendChild(div);
+
+    // checkbox
+    div.querySelector('.excheck').addEventListener('change', function(e) {
+      if (!EX[ex.n]) EX[ex.n] = {};
+      EX[ex.n].done = e.target.checked;
+    });
+    // text inputs
+    div.querySelectorAll('.si').forEach(function(inp) {
+      inp.addEventListener('input', function() {
+        if (!EX[ex.n]) EX[ex.n] = {};
+        EX[ex.n][inp.getAttribute('data-f')] = inp.value;
+      });
+    });
+  });
+}
+
+document.getElementById('gsave').addEventListener('click', function() {
+  var d = ld();
+  d.gl.push({id:Date.now(), date:document.getElementById('gd').value, sess:CS, ex:JSON.parse(JSON.stringify(EX))});
+  sv(d);
+  var btn = document.getElementById('gsave');
+  btn.textContent = 'Saved!'; btn.className = 'sbtn ok';
+  setTimeout(function(){ btn.textContent='Save session'; btn.className='sbtn'; }, 2000);
+});
+
+// ── CARDIO ───────────────────────────────────────────────────────
+function renderCardio() {
+  document.getElementById('cd').value = new Date().toISOString().split('T')[0];
+  var pp = document.getElementById('ctype-pills');
+  pp.innerHTML = '';
+  ['Stair master','Walk','Walk + stair master','Light jog'].forEach(function(t) {
+    var b = document.createElement('button');
+    b.className = 'pll' + (t === CC ? ' on' : '');
+    b.textContent = t;
+    b.addEventListener('click', function() {
+      CC = t;
+      document.querySelectorAll('#ctype-pills .pll').forEach(function(x){ x.className='pll'; });
+      b.className = 'pll on';
+    });
+    pp.appendChild(b);
+  });
+}
+
+document.getElementById('ceff').addEventListener('input', function() {
+  document.getElementById('ceo').textContent = this.value;
+});
+
+document.getElementById('csave').addEventListener('click', function() {
+  var dur = document.getElementById('cdur').value;
+  if (!dur) return;
+  var d = ld();
+  d.cl.push({
+    id:Date.now(),
+    date:document.getElementById('cd').value,
+    type:CC,
+    dur:dur,
+    dist:document.getElementById('cdist').value,
+    level:document.getElementById('clevel').value,
+    eff:document.getElementById('ceff').value,
+    notes:document.getElementById('cnotes').value
+  });
+  sv(d);
+  ['cdur','cdist','clevel','cnotes'].forEach(function(id){ document.getElementById(id).value=''; });
+  document.getElementById('ceff').value = 7;
+  document.getElementById('ceo').textContent = '7';
+  var btn = document.getElementById('csave');
+  btn.textContent = 'Saved!'; btn.className = 'sbtn ok';
+  setTimeout(function(){ btn.textContent='Save cardio'; btn.className='sbtn'; }, 2000);
+});
+
+// ── HISTORY ──────────────────────────────────────────────────────
+function renderHist() {
+  var d = ld();
+  var list = document.getElementById('hlist');
+  var stats = document.getElementById('hstats');
+  if (HV === 'g') {
+    stats.innerHTML = '';
+    var gyms = d.gl.slice().reverse();
+    if (!gyms.length) { list.innerHTML = '<p class="empty">No strength sessions yet!<br>Head to the Strength tab &#x1F4AA;</p>'; return; }
+    list.innerHTML = gyms.map(function(g) {
+      var dn = Object.values(g.ex||{}).filter(function(e){return e.done;}).length;
+      var tot = Object.keys(g.ex||{}).length;
+      var rows = Object.entries(g.ex||{})
+        .filter(function(kv){ return kv[1].s1||kv[1].s2||kv[1].s3; })
+        .map(function(kv) {
+          var sets = [kv[1].s1,kv[1].s2,kv[1].s3].filter(Boolean).join(' &middot; ');
+          return '<div class="hex"><div class="hen">'+kv[0]+'</div><div class="hev">'+sets+'</div>'+(kv[1].notes?'<div class="hn">'+kv[1].notes+'</div>':'')+'</div>';
+        }).join('');
+      return '<div class="hc"><div style="display:flex;justify-content:space-between;align-items:center"><div><div class="ht">'+g.sess+'</div><div class="hs">'+g.date+'</div></div><div style="font-size:12px;font-weight:700;color:#c2185b">'+dn+'/'+tot+' done</div></div>'+rows+'</div>';
+    }).join('');
+  } else {
+    var cards = d.cl.slice().reverse();
+    var totalMins = d.cl.reduce(function(a,x){ return a+(parseFloat(x.dur)||0); }, 0);
+    if (cards.length) {
+      stats.innerHTML = '<div class="sgrid">' +
+        '<div class="stt"><div class="sv">'+cards.length+'</div><div class="sl">Sessions</div></div>' +
+        '<div class="stt"><div class="sv">'+Math.round(totalMins)+'</div><div class="sl">Total mins</div></div>' +
+        '<div class="stt"><div class="sv">'+Math.round(totalMins/cards.length)+'</div><div class="sl">Avg mins</div></div></div>';
+    } else { stats.innerHTML = ''; }
+    if (!cards.length) { list.innerHTML = '<p class="empty">No cardio logged yet!<br>Head to the Cardio tab &#x1F6B6;</p>'; return; }
+    list.innerHTML = cards.map(function(c) {
+      return '<div class="hc"><div class="ht">'+c.type+' &middot; '+(c.dur||'?')+' min</div>' +
+        '<div class="hs">'+c.date+(c.dist?' &middot; '+c.dist:'')+'</div>' +
+        (c.level?'<div class="hd">'+c.level+'</div>':'') +
+        (c.eff?'<div class="hd">Effort '+c.eff+'/10</div>':'') +
+        (c.notes?'<div class="hn">'+c.notes+'</div>':'') + '</div>';
+    }).join('');
+  }
+}
+
+document.getElementById('hgbtn').addEventListener('click', function() {
+  HV = 'g';
+  document.getElementById('hgbtn').className = 'tgbt on';
+  document.getElementById('hcbtn').className = 'tgbt';
+  renderHist();
+});
+document.getElementById('hcbtn').addEventListener('click', function() {
+  HV = 'c';
+  document.getElementById('hgbtn').className = 'tgbt';
+  document.getElementById('hcbtn').className = 'tgbt on';
+  renderHist();
+});
+
+// ── NUTRITION ────────────────────────────────────────────────────
+function renderNutrition() {
+  var cc = document.getElementById('meal-cats');
+  if (!cc.children.length) {
+    Object.keys(MEALS).forEach(function(c) {
+      var b = document.createElement('button');
+      b.className = 'pll' + (c === CM ? ' on' : '');
+      b.textContent = c;
+      b.addEventListener('click', function() {
+        CM = c;
+        document.querySelectorAll('#meal-cats .pll').forEach(function(x){ x.className='pll'; });
+        b.className = 'pll on';
+        renderMealList();
+      });
+      cc.appendChild(b);
+    });
+  }
+  renderMealList();
+}
+
+function renderMealList() {
+  document.getElementById('meal-list').innerHTML = MEALS[CM].map(function(m, i) {
+    return '<div class="mitem '+(i%2===0?'ev':'od')+'"><strong>'+m.t+'</strong><span class="gf-tag">GF</span><div style="margin-top:4px;font-size:12px;color:#888">'+m.d+'</div></div>';
+  }).join('');
+}
+
+// ── PLAN ─────────────────────────────────────────────────────────
+function renderPlan() {
+  var btns = document.getElementById('ph-btns');
+  if (!btns.children.length) {
+    PHS.forEach(function(p, i) {
+      var b = document.createElement('button');
+      b.className = 'phbt' + (i === CP ? ' on' : '');
+      b.textContent = p.p;
+      b.addEventListener('click', function() {
+        CP = i;
+        document.querySelectorAll('.phbt').forEach(function(x){ x.className='phbt'; });
+        b.className = 'phbt on';
+        renderPhaseContent();
+      });
+      btns.appendChild(b);
+    });
+  }
+  renderPhaseContent();
+}
+
+function renderPhaseContent() {
+  var p = PHS[CP];
+  var bgs = ['#fef5fb','#fce4f0','#fce4f0'];
+  document.getElementById('ph-content').innerHTML =
+    '<div class="phcard" style="background:'+bgs[CP]+';border:1px solid #f5d0e8">' +
+      '<div class="phtitle">'+p.p+' &mdash; '+p.m+'</div>' +
+      '<div class="phname">'+p.d+'</div>' +
+      p.s.map(function(s){ return '<div class="rs">'+s+'</div>'; }).join('') +
+    '</div>';
+}
+
+// ── INIT ─────────────────────────────────────────────────────────
+renderHome();
+
+})();
+</script>
+</body>
+</html>
